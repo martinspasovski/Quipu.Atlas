@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7A2E084E-C770-4463-A4C1-45347494D289}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quipu.Atlas.Api", "src\Quipu.Atlas.Api\Quipu.Atlas.Api.csproj", "{CC271E57-6653-4E01-8F1A-62192F55F6FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quipu.Atlas.Application", "src\Quipu.Atlas.Application\Quipu.Atlas.Application.csproj", "{EED45948-6785-4697-96D6-394F5131877D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quipu.Atlas.Domain", "src\Quipu.Atlas.Domain\Quipu.Atlas.Domain.csproj", "{FCE1EE75-B25C-4D12-BA33-0D27E0179AF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quipu.Atlas.Infrastructure", "src\Quipu.Atlas.Infrastructure\Quipu.Atlas.Infrastructure.csproj", "{080A120D-C033-4805-BF86-63DED482130E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CC271E57-6653-4E01-8F1A-62192F55F6FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC271E57-6653-4E01-8F1A-62192F55F6FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC271E57-6653-4E01-8F1A-62192F55F6FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC271E57-6653-4E01-8F1A-62192F55F6FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EED45948-6785-4697-96D6-394F5131877D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EED45948-6785-4697-96D6-394F5131877D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EED45948-6785-4697-96D6-394F5131877D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EED45948-6785-4697-96D6-394F5131877D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCE1EE75-B25C-4D12-BA33-0D27E0179AF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCE1EE75-B25C-4D12-BA33-0D27E0179AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCE1EE75-B25C-4D12-BA33-0D27E0179AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCE1EE75-B25C-4D12-BA33-0D27E0179AF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{080A120D-C033-4805-BF86-63DED482130E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{080A120D-C033-4805-BF86-63DED482130E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{080A120D-C033-4805-BF86-63DED482130E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{080A120D-C033-4805-BF86-63DED482130E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

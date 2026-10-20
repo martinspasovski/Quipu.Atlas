@@ -1,0 +1,13 @@
+﻿services:
+  quipu.atlas:
+    image: quipu.atlas
+    build:
+      context: .
+      dockerfile: Quipu.Atlas/Dockerfile
+
+  quipu.atlas.api:
+    image: quipu.atlas.api
+    build:
+      context: .
+      dockerfile: Quipu.Atlas.Api/Dockerfile
+
