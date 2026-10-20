@@ -9,8 +9,6 @@ public sealed class SubmitApplicationInput
     public string Country { get; init; } = string.Empty;
     public string Nationality { get; init; } = string.Empty;
     public string? NationalId { get; init; }
-    public string? IdentifierType { get; init; }
-    public string? IdentifierValue { get; init; }
     public string IssuingCountry { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
     public string Phone { get; init; } = string.Empty;

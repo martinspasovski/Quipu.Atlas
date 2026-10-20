@@ -1,14 +1,10 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Quipu.Atlas.Api.Persistence;
-using Quipu.Atlas.Domain.Applications;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Quipu.Atlas.Infrastructure.Persistence
+using Quipu.Atlas.Domain.Applications;
+
+namespace Quipu.Atlas.Infrastructure.Persistence.Stores
 {
     internal sealed class OnboardingApplicationStore(
         IDbContextFactory<AtlasDbContext> dbContextFactory) : IOnboardingApplicationStore
@@ -51,11 +47,11 @@ namespace Quipu.Atlas.Infrastructure.Persistence
         }
 
         public async Task<bool> TryAcquireProcessingLeaseAsync(
-           Guid applicationId,
-           Guid processingToken,
-           DateTimeOffset nowUtc,
-           DateTimeOffset leaseExpiresAtUtc,
-           CancellationToken cancellationToken)
+            Guid applicationId,
+            Guid processingToken,
+            DateTimeOffset nowUtc,
+            DateTimeOffset leaseExpiresAtUtc,
+            CancellationToken cancellationToken)
         {
             await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
 
@@ -72,13 +68,13 @@ namespace Quipu.Atlas.Infrastructure.Persistence
         }
 
         public async Task SaveCheckOutcomeAsync(
-         Guid applicationId,
-         Guid processingToken,
-         IReadOnlyCollection<ProviderCheckAttempt> providerAttempts,
-         ApplicationStatus status,
-         string? reasonCode,
-         DateTimeOffset updatedAtUtc,
-         CancellationToken cancellationToken)
+            Guid applicationId,
+            Guid processingToken,
+            IReadOnlyCollection<ProviderCheckAttempt> providerAttempts,
+            ApplicationStatus status,
+            string? reasonCode,
+            DateTimeOffset updatedAtUtc,
+            CancellationToken cancellationToken)
         {
             await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
 
@@ -89,10 +85,15 @@ namespace Quipu.Atlas.Infrastructure.Persistence
                 ?? throw new InvalidOperationException(
                     $"Processing lease for application '{applicationId}' is no longer owned by this request.");
 
+            // Track each attempt graph explicitly. The result rows use ProviderCheckAttemptId
+            // as both their primary key and FK, so the attempt must be inserted first.
             foreach (var attempt in providerAttempts)
             {
-                application.ProviderCheckAttempts.Add(attempt);
+                attempt.ApplicationId = application.Id;
+                attempt.Application = application;
             }
+
+            dbContext.ProviderCheckAttempts.AddRange(providerAttempts);
 
             application.Status = status;
             application.DecisionReasonCode = reasonCode;

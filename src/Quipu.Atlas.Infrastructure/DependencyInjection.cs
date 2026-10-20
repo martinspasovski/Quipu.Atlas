@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Quipu.Atlas.Api.Persistence;
-using Quipu.Atlas.Application.Providers.IdNow;
 using Quipu.Atlas.Application.Providers.WorldCheck;
 using Quipu.Atlas.Infrastructure.Persistence;
+using Quipu.Atlas.Infrastructure.Persistence.Stores;
 using Quipu.Atlas.Infrastructure.Providers.IdNow;
 using Quipu.Atlas.Infrastructure.Providers.WorldCheck;
 

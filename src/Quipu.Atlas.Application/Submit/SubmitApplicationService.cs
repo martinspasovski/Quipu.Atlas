@@ -1,11 +1,10 @@
-using System.Security.Cryptography;
-using System.Text.Json;
 using Quipu.Atlas.Api.Persistence;
-using Quipu.Atlas.Application.Providers;
 using Quipu.Atlas.Application.Providers.IdNow;
 using Quipu.Atlas.Application.Providers.WorldCheck;
 using Quipu.Atlas.Domain.Applications;
 using Quipu.Atlas.Domain.Decisions;
+using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace Quipu.Atlas.Application.Submit;
 
@@ -32,9 +31,6 @@ public sealed class SubmitApplicationService(
         var identityDocument = validInput.Documents.Single(document =>
             IsDocumentType(document.Type, "PASSPORT") || IsDocumentType(document.Type, "ID_CARD"));
         var selfie = validInput.Documents.Single(document => IsDocumentType(document.Type, "SELFIE"));
-        var identifierType = string.Equals(validInput.IdentifierType, "PASSPORT", StringComparison.OrdinalIgnoreCase)
-            ? IdentifierType.Passport
-            : IdentifierType.NationalId;
 
         var command = new SubmitApplicationCommand(
             idempotencyKey!,
@@ -44,8 +40,8 @@ public sealed class SubmitApplicationService(
                 validInput.DateOfBirth,
                 validInput.Country.Trim().ToUpperInvariant(),
                 validInput.Nationality.Trim().ToUpperInvariant(),
-                identifierType,
-                (validInput.IdentifierValue ?? validInput.NationalId)!.Trim(),
+                IdentifierType.NationalId,
+                validInput.NationalId!.Trim(),
                 validInput.IssuingCountry.Trim().ToUpperInvariant(),
                 validInput.Email.Trim(),
                 validInput.Phone.Trim(),
@@ -103,7 +99,8 @@ public sealed class SubmitApplicationService(
 
             if (existing is null)
             {
-                throw new InvalidOperationException("The idempotency key was reported as duplicate, but no application was found.");
+                throw new InvalidOperationException(
+                    "The idempotency key was reported as duplicate, but no application was found.");
             }
 
             if (!CryptographicOperations.FixedTimeEquals(existing.RequestHash, requestHash))
@@ -127,17 +124,24 @@ public sealed class SubmitApplicationService(
 
             if (!leaseAcquired)
             {
-                return new(existing.Id, existing.Status, existing.DecisionReasonCode, IsReplay: true, IsInProgress: true);
+                return new(
+                    existing.Id,
+                    existing.Status,
+                    existing.DecisionReasonCode,
+                    IsReplay: true,
+                    IsInProgress: true);
             }
 
             application = existing;
         }
 
         var applicant = command.Applicant;
+
         // Once the application is persisted, provider work is bounded by each HttpClient timeout
         // and continues if the mobile connection closes before the response is returned.
         var idNowTask = ExecuteTimedAsync(
             () => idNowProvider.CheckAsync(command.IdNowCheck, CancellationToken.None));
+
         var worldCheckTask = ExecuteTimedAsync(() => worldCheckProvider.CheckAsync(
             new WorldCheckCheckRequest(
                 $"{applicant.FirstName} {applicant.LastName}".Trim(),
@@ -146,14 +150,13 @@ public sealed class SubmitApplicationService(
             CancellationToken.None));
 
         await Task.WhenAll(new Task[] { idNowTask, worldCheckTask });
+
         var idNowOutcome = await idNowTask;
         var worldCheckOutcome = await worldCheckTask;
         var completedAt = DateTimeOffset.UtcNow;
 
         var idNowAttempt = CreateIdNowAttempt(application.Id, idNowOutcome);
         var worldCheckAttempt = CreateWorldCheckAttempt(application.Id, worldCheckOutcome);
-
-
         var decision = decisionService.Decide(idNowAttempt, worldCheckAttempt);
 
         await applicationStore.SaveCheckOutcomeAsync(
@@ -246,6 +249,7 @@ public sealed class SubmitApplicationService(
         if (outcome.Value is { } value)
         {
             attempt.ProviderReference = value.CaseId;
+
             var worldCheckResult = new WorldCheckResult
             {
                 ProviderCheckAttemptId = attempt.Id,
@@ -260,6 +264,7 @@ public sealed class SubmitApplicationService(
                     Subject = match.Subject
                 }).ToList()
             };
+
             attempt.WorldCheckResult = worldCheckResult;
 
             foreach (var match in worldCheckResult.Matches)

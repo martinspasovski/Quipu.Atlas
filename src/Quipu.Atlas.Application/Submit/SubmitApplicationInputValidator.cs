@@ -44,18 +44,26 @@ public static class SubmitApplicationInputValidator
         if (!System.Text.RegularExpressions.Regex.IsMatch(input.Country ?? string.Empty, "^M[A-F]$"))
             Add(nameof(input.Country), "Country must be one of the configured market codes MA through MF.");
 
-        if (string.IsNullOrWhiteSpace(input.Nationality) || input.Nationality.Trim().Length is < 2 or > 3)
+        if (string.IsNullOrWhiteSpace(input.Nationality) ||
+            input.Nationality.Trim().Length is < 2 or > 3)
+        {
             Add(nameof(input.Nationality), "Nationality is required and must contain two or three characters.");
+        }
 
-        ValidateIdentifier(input, Add);
+        ValidateNationalId(input, Add);
 
-        if (string.IsNullOrWhiteSpace(input.IssuingCountry) || input.IssuingCountry.Trim().Length != 3)
+        if (string.IsNullOrWhiteSpace(input.IssuingCountry) ||
+            input.IssuingCountry.Trim().Length != 3)
+        {
             Add(nameof(input.IssuingCountry), "IssuingCountry is required and must contain three characters.");
+        }
 
         if (string.IsNullOrWhiteSpace(input.Email) ||
             input.Email.Trim().Length > 254 ||
             !new EmailAddressAttribute().IsValid(input.Email.Trim()))
+        {
             Add(nameof(input.Email), "Email must be valid and must not exceed 254 characters.");
+        }
 
         if (string.IsNullOrWhiteSpace(input.Phone) || input.Phone.Trim().Length > 32)
             Add(nameof(input.Phone), "Phone is required and must not exceed 32 characters.");
@@ -68,36 +76,18 @@ public static class SubmitApplicationInputValidator
         return errors.ToDictionary(pair => pair.Key, pair => pair.Value.ToArray(), StringComparer.Ordinal);
     }
 
-    private static void ValidateIdentifier(
+    private static void ValidateNationalId(
         SubmitApplicationInput input,
         Action<string, string> addError)
     {
-        var hasNationalId = !string.IsNullOrWhiteSpace(input.NationalId);
-        var hasIdentifierType = !string.IsNullOrWhiteSpace(input.IdentifierType);
-        var hasIdentifierValue = !string.IsNullOrWhiteSpace(input.IdentifierValue);
-
-        if (hasNationalId && !hasIdentifierType && !hasIdentifierValue)
+        if (string.IsNullOrWhiteSpace(input.NationalId))
         {
-            if (input.NationalId!.Trim().Length > 32)
-                addError(nameof(input.NationalId), "NationalId must not exceed 32 characters.");
+            addError(nameof(input.NationalId), "NationalId is required.");
             return;
         }
 
-        if (!hasNationalId && hasIdentifierType && hasIdentifierValue)
-        {
-            if (!string.Equals(input.IdentifierType, "NATIONAL_ID", StringComparison.OrdinalIgnoreCase) &&
-                !string.Equals(input.IdentifierType, "PASSPORT", StringComparison.OrdinalIgnoreCase))
-            {
-                addError(nameof(input.IdentifierType), "IdentifierType must be NATIONAL_ID or PASSPORT.");
-            }
-
-            if (input.IdentifierValue!.Trim().Length > 32)
-                addError(nameof(input.IdentifierValue), "IdentifierValue must not exceed 32 characters.");
-
-            return;
-        }
-
-        addError("Identifier", "Provide either NationalId or both IdentifierType and IdentifierValue.");
+        if (input.NationalId.Trim().Length > 32)
+            addError(nameof(input.NationalId), "NationalId must not exceed 32 characters.");
     }
 
     private static void ValidateDocuments(
