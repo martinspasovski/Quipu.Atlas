@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.11.12306.390 stable
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7A2E084E-C770-4463-A4C1-45347494D289}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yaml = compose.yaml
@@ -12,6 +15,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quipu.Atlas.Domain", "src\Quipu.Atlas.Domain\Quipu.Atlas.Domain.csproj", "{FCE1EE75-B25C-4D12-BA33-0D27E0179AF3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quipu.Atlas.Infrastructure", "src\Quipu.Atlas.Infrastructure\Quipu.Atlas.Infrastructure.csproj", "{080A120D-C033-4805-BF86-63DED482130E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quipu.Atlas.UnitTests", "tests\Quipu.Atlas.UnitTests\Quipu.Atlas.UnitTests.csproj", "{C92DA231-951F-42B3-BF6A-FAEF3179BE19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,5 +40,15 @@ Global
 		{080A120D-C033-4805-BF86-63DED482130E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{080A120D-C033-4805-BF86-63DED482130E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{080A120D-C033-4805-BF86-63DED482130E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C92DA231-951F-42B3-BF6A-FAEF3179BE19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C92DA231-951F-42B3-BF6A-FAEF3179BE19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C92DA231-951F-42B3-BF6A-FAEF3179BE19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C92DA231-951F-42B3-BF6A-FAEF3179BE19}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6EF16884-63BB-4617-9523-280E9162E4D2}
 	EndGlobalSection
 EndGlobal
