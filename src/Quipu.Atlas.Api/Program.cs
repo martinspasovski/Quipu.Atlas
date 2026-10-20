@@ -1,4 +1,5 @@
 using Quipu.Atlas.Infrastructure;
+using Quipu.Atlas.Application;
 
 namespace Quipu.Atlas.Api
 {
@@ -14,6 +15,8 @@ namespace Quipu.Atlas.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddAtlasApplication();
             builder.Services.AddAtlasInfrastructure(builder.Configuration);
 
             var app = builder.Build();
