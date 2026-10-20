@@ -29,8 +29,6 @@
 
     <ItemGroup>
       <Folder Include="Persistence\Migrations\" />
-      <Folder Include="Providers\IdNow\" />
-      <Folder Include="Providers\WorldCheck\" />
     </ItemGroup>
 
 </Project>

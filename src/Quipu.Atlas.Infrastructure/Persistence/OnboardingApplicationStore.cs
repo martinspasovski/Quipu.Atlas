@@ -50,19 +50,44 @@ namespace Quipu.Atlas.Infrastructure.Persistence
                 .SingleOrDefaultAsync(x => x.IdempotencyKey == idempotencyKey, cancellationToken);
         }
 
+        public async Task<bool> TryAcquireProcessingLeaseAsync(
+           Guid applicationId,
+           Guid processingToken,
+           DateTimeOffset nowUtc,
+           DateTimeOffset leaseExpiresAtUtc,
+           CancellationToken cancellationToken)
+        {
+            await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+
+            var updatedRows = await dbContext.Applications
+                .Where(x => x.Id == applicationId &&
+                            x.Status == ApplicationStatus.ChecksInProgress &&
+                            (x.ProcessingLeaseExpiresAtUtc == null || x.ProcessingLeaseExpiresAtUtc <= nowUtc))
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(x => x.ProcessingToken, processingToken)
+                    .SetProperty(x => x.ProcessingLeaseExpiresAtUtc, leaseExpiresAtUtc)
+                    .SetProperty(x => x.UpdatedAtUtc, nowUtc), cancellationToken);
+
+            return updatedRows == 1;
+        }
+
         public async Task SaveCheckOutcomeAsync(
-            Guid applicationId,
-            IReadOnlyCollection<ProviderCheckAttempt> providerAttempts,
-            ApplicationStatus status,
-            string? reasonCode,
-            DateTimeOffset updatedAtUtc,
-            CancellationToken cancellationToken)
+         Guid applicationId,
+         Guid processingToken,
+         IReadOnlyCollection<ProviderCheckAttempt> providerAttempts,
+         ApplicationStatus status,
+         string? reasonCode,
+         DateTimeOffset updatedAtUtc,
+         CancellationToken cancellationToken)
         {
             await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
 
             var application = await dbContext.Applications
-                .SingleOrDefaultAsync(x => x.Id == applicationId, cancellationToken)
-                ?? throw new KeyNotFoundException($"Application '{applicationId}' was not found.");
+                .SingleOrDefaultAsync(
+                    x => x.Id == applicationId && x.ProcessingToken == processingToken,
+                    cancellationToken)
+                ?? throw new InvalidOperationException(
+                    $"Processing lease for application '{applicationId}' is no longer owned by this request.");
 
             foreach (var attempt in providerAttempts)
             {
@@ -72,6 +97,8 @@ namespace Quipu.Atlas.Infrastructure.Persistence
             application.Status = status;
             application.DecisionReasonCode = reasonCode;
             application.UpdatedAtUtc = updatedAtUtc;
+            application.ProcessingToken = null;
+            application.ProcessingLeaseExpiresAtUtc = null;
 
             await dbContext.SaveChangesAsync(cancellationToken);
         }

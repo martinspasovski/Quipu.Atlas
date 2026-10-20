@@ -10,8 +10,17 @@ namespace Quipu.Atlas.Api.Persistence
             string idempotencyKey,
             CancellationToken cancellationToken);
 
+        Task<bool> TryAcquireProcessingLeaseAsync(
+            Guid applicationId,
+            Guid processingToken,
+            DateTimeOffset nowUtc,
+            DateTimeOffset leaseExpiresAtUtc,
+            CancellationToken cancellationToken);
+
+
         Task SaveCheckOutcomeAsync(
             Guid applicationId,
+            Guid processingToken,
             IReadOnlyCollection<ProviderCheckAttempt> providerAttempts,
             ApplicationStatus status,
             string? reasonCode,
